@@ -1,5 +1,8 @@
+# No version is yet released to the Google extension store!
+
 # NewTabHere
-Firefox extension to open tabs at specific positions | https://addons.mozilla.org/firefox/addon/new-tab-here/
+
+The Google Chrome version of the Firefox extension [NewTabHere](https://github.com/pollti/NewTabHere) to open tabs at specific positions.
 
 Current features:
 * Open new tabs at the position of the currently selected tab
@@ -19,4 +22,4 @@ Future features:
 * new ideas or pull requests are welcome
 
 Known bugs:
-* None yet, please report bugs here: https://github.com/pollti/NewTabHere/issues
+* None yet, please report bugs here: https://github.com/fdamken/NewTabHere/issues

@@ -11,16 +11,15 @@ var defaultSettings = {
 function checkStoredSettings(storedSettings) {
   if (!storedSettings.toolbar_button_def_lr || !storedSettings.tab_context_def_lrd || !storedSettings.page_context_def_lrd ||
       !storedSettings.toolsmen_def_lrd || !storedSettings.keyboard_def_lrd) {
-    browser.storage.sync.set(defaultSettings);
+    chrome.storage.sync.set(defaultSettings);
   }
 }
 
-const getStoredSettings = browser.storage.sync.get();
-getStoredSettings.then(checkStoredSettings, onError);
+const getStoredSettings = chrome.storage.sync.get(Object.keys(defaultSettings), checkStoredSettings);
 
 function onCreated() {
-  if (browser.runtime.lastError) {
-    console.log(`Error: ${browser.runtime.lastError}`);
+  if (chrome.runtime.lastError) {
+    console.log(`Error: ${chrome.runtime.lastError}`);
   } else {
     //console.log("Context menu entry created successfully.");
   }
@@ -39,8 +38,7 @@ function openTabs(tabs) {
     //console.log(tab.index);
     //console.log(lrd);
     if (lrd < 2){
-      var NTHcreate = browser.tabs.create({index: ((lrd == 0) ? tab.index : (tab.index + 1))});
-      NTHcreate.then(onSuccess, onError);
+      chrome.tabs.create({index: ((lrd == 0) ? tab.index : (tab.index + 1))});
     }
   }
   lrd = 1;
@@ -50,9 +48,9 @@ function createMenus(){
 
   function createPageContextMenu(setting) {
     if(setting.page_context_def_lrd != "disabled"){
-      browser.menus.create({
+      chrome.contextMenus.create({
         id: "NTH-page",
-        title: browser.i18n.getMessage("NewTabHerePageContextMenu"),
+        title: "Open TewTabHere",
         contexts: ["all"]
       }, onCreated)
     }
@@ -60,12 +58,12 @@ function createMenus(){
 
   function createTabContextMenu(setting) {
     if(setting.tab_context_def_lrd != "disabled"){
-      if(browser.menus.ContextType.TAB)
+      if(chrome.contextMenus.ContextType.TAB)
       {
-        browser.menus.create({
+        chrome.contextMenus.create({
           id: "NTH-tab",
-          title: browser.i18n.getMessage("NewTabHereTabContextMenu"),
-          contexts: [browser.menus.ContextType.TAB]
+          title: "Open NewTabHere",
+          contexts: [chrome.contextMenus.ContextType.TAB]
         }, onCreated)
       }
     }
@@ -73,25 +71,22 @@ function createMenus(){
 
   function createFileMenuEntry(setting) {
     if(setting.tab_context_def_lrd != "disabled"){
-      browser.menus.create({
+      chrome.contextMenus.create({
         id: "NTH-menu",
-        title: browser.i18n.getMessage("NewTabHereToolsMenu"),
-        contexts: ["tools_menu"],
+        title: "Open TewTabHere",
+        contexts: ["all"],
       }, onCreated);
     }
   }
 
-  var getting1 = browser.storage.sync.get("page_context_def_lrd");
-  getting1.then(createPageContextMenu, onError);
+  var getting1 = chrome.storage.sync.get(["page_context_def_lrd"], createPageContextMenu);
 
-  var getting2 = browser.storage.sync.get("tab_context_def_lrd");
-  getting2.then(createTabContextMenu, onError);
+  var getting2 = chrome.storage.sync.get(["tab_context_def_lrd"], createTabContextMenu);
 
-  var getting3 = browser.storage.sync.get("toolsmen_def_lrd");
-  getting3.then(createFileMenuEntry, onError);
+  var getting3 = chrome.storage.sync.get(["toolsmen_def_lrd"], createFileMenuEntry);
 
 
-  browser.menus.onClicked.addListener(
+  chrome.contextMenus.onClicked.addListener(
     function(info, tab) {
       switch (info.menuItemId) {
       case "NTH-page":
@@ -108,8 +103,7 @@ function createMenus(){
           openTabs([tab]);
           //console.log(pos);
         }
-        var getting = browser.storage.sync.get("page_context_def_lrd");
-        getting.then(setLRD, onError);
+        var getting = chrome.storage.sync.get(["page_context_def_lrd"], setLRD);
         break;
       case "NTH-tab":
         function setLRD(pos){
@@ -126,8 +120,7 @@ function createMenus(){
           //console.log(pos);
           //console.log(pos.tab_context_def_lrd);
         }
-        var getting = browser.storage.sync.get("tab_context_def_lrd");
-        getting.then(setLRD, onError);
+        var getting = chrome.storage.sync.get(["tab_context_def_lrd"], setLRD);
         break;
       case "NTH-menu":
         function setLRD(pos){
@@ -144,8 +137,7 @@ function createMenus(){
           //console.log(pos);
           //console.log(pos.tab_context_def_lrd);
         }
-        var getting = browser.storage.sync.get("toolsmen_def_lrd");
-        getting.then(setLRD, onError);
+        var getting = chrome.storage.sync.get(["toolsmen_def_lrd"], setLRD);
         break;
       }
     })
@@ -154,7 +146,7 @@ function createMenus(){
 
   createMenus();
 
-  browser.commands.onCommand.addListener(function(command) {
+  chrome.commands.onCommand.addListener(function(command) {
     if (command == "new-tab-here") {
       function setLRD(pos){
         if(pos.keyboard_def_lrd == "left"){
@@ -166,16 +158,14 @@ function createMenus(){
         if(pos.keyboard_def_lrd == "disabled"){
           lrd = 2;
         }
-        var querying = browser.tabs.query({currentWindow: true, active: true});
-        querying.then(openTabs, onError);
+        var querying = chrome.tabs.query({currentWindow: true, active: true}, openTabs);
       }
-      var getting = browser.storage.sync.get("keyboard_def_lrd");
-      getting.then(setLRD, onError);
+      var getting = chrome.storage.sync.get("keyboard_def_lrd", setLRD);
       //console.log("Opening new tab (keyboard shortcut)");
     }
   });
 
-  browser.browserAction.onClicked.addListener(function() {
+  chrome.browserAction.onClicked.addListener(function() {
     function setLRD(pos){
       if(pos.toolbar_button_def_lr == "left"){
         lrd = 0;
@@ -183,13 +173,11 @@ function createMenus(){
       if(pos.toolbar_button_def_lr == "right"){
         lrd = 1;
       }
-      var querying = browser.tabs.query({currentWindow: true, active: true});
-      querying.then(openTabs, onError);
+      var querying = chrome.tabs.query({currentWindow: true, active: true}, openTabs);
       //console.log(pos);
     }
 
-    var getting = browser.storage.sync.get("toolbar_button_def_lr");
-    getting.then(setLRD, onError);
+    var getting = chrome.storage.sync.get(["toolbar_button_def_lr"], setLRD);
 
     //console.log("Opening new tab (toolbar button)");
   });

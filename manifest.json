@@ -1,44 +1,29 @@
 {
-
   "manifest_version": 2,
-  "name": "__MSG_extensionName__",
+  "name": "NewTabHere",
+  "description": "Google Chrome plugin to open a tab at a specific position.",
+  "homepage_url": "https://github.com/fdamken/NewTabHere",
   "version": "1.0.0",
-  "author": "Tim Pollandt <pollti@gmx.net>",
-
-  "applications": {
-    "gecko": {
-      "id": "newtabhere@pollti",
-      "strict_min_version": "57.0a1"
-    }
+  "background": {
+    "scripts": ["src/background.js"]
   },
-
-  "description": "__MSG_extensionDescription__",
-  "homepage_url": "https:/github.com/pollti/NewTabHere",
-
-  "icons": {
-    "48": "icons/NTH-48.png",
-    "96": "icons/NTH-96.png"
-  },
-
   "permissions": [
-    "menus",
+    "contextMenus",
     "tabs",
     "storage"
   ],
-
-  "background": {
-      "scripts": ["src/background.js"]
-  },
-
   "commands": {
     "new-tab-here": {
       "suggested_key": {
         "default": "Ctrl+Y"
       },
-      "description": "__MSG_keyboardDescNewTabAtCurrPos__"
+      "description": "Shortcut for open a NewTabHere"
     }
   },
-
+  "icons": {
+    "48": "icons/NTH-48.png",
+    "96": "icons/NTH-96.png"
+  },
   "browser_action": {
     "browser_style": true,
     "default_icon": {
@@ -49,15 +34,7 @@
       "dark": "icons/NTH-48.png",
       "size": 48
     }],
-    "default_title": "__MSG_NewTabHereButtonCaption__",
+    "default_title": "Open NewTabHere",
     "default_area": "tabstrip"
-  },
-
-  "options_ui": {
-    "open_in_tab": false,
-    "browser_style": true,
-    "page": "__MSG_SettingsFile__"
-  },
-
-  "default_locale": "en"
+  }
 }

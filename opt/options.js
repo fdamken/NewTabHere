@@ -77,28 +77,3 @@ function restoreOptions() {
 document.addEventListener("DOMContentLoaded", restoreOptions);
 document.querySelector("form").addEventListener("submit", saveOptions);
 document.querySelector("form").addEventListener("reset", clearOptions);
-
-/*
- * depricated
-//i18n
-function i18n_string(obj, tag) {
-    var msg = tag.replace(/__(\w+)__/g, function(match, v1) {
-        return v1 ? browser.i18n.getMessage(v1) : '';
-    });
-
-    if(msg != tag) obj.innerHTML = msg;
-}
-
-function html_i18n() {
-    var page = document.getElementsByTagName('body');
-
-    for (var j = 0; j < page.length; j++) {
-        var obj = page[j];
-        var tag = obj.innerHTML.toString();
-
-        i18n_string(obj, tag);
-    }
-}
-
-//html_i18n();
-*/
